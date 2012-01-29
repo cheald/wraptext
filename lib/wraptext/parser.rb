@@ -4,13 +4,16 @@ module Wraptext
     ul ol li pre select option form map area blockquote address math style input hr
     fieldset legend section article aside hgroup header footer nav p
     figure figcaption details menu summary h1 h2 h3 h4 h5 h6 script"
+    BLOCK_TAGS_LOOKUP = Hash[*BLOCK_TAGS.map {|e| [e, 1]}.flatten]
 
     NO_WRAP_TAG = %w"table thead tfoot caption col colgroup tbody tr td th dl dd dt
     ul ol li pre select option form map area math style input hr
     fieldset legend section article aside hgroup header footer nav
     figure figcaption details menu summary h1 h2 h3 h4 h5 h6 script"
+    NO_WRAP_TAG_LOOKUP = Hash[*NO_WRAP_TAG.map {|e| [e, 1]}.flatten]
 
     STRAIGHT_COPY_TAGS = %w"script pre textarea"
+    STRAIGHT_COPY_TAGS_LOOKUP = Hash[*STRAIGHT_COPY_TAGS.map {|e| [e, 1]}.flatten]
     MULTIPLE_NEWLINES_REGEX = /(\r\n|\n){2,}/
 
     def self.parse(text)
@@ -61,15 +64,16 @@ module Wraptext
     # simple_format is not appropriate here, as it does not consider block-level
     # html element context when performing substitutions.
     def reparent_nodes(top, parent)
-      parent.children.each do |node|
+      for i in (0..parent.children.length - 1) do
+        node = parent.children[i]
         # Block-level tags like <div> and <blockquote> should be traversed into.
-        if BLOCK_TAGS.include? node.name
+        if BLOCK_TAGS_LOOKUP.has_key? node.name
           # If we hit a block-level tag, we need to unwind any <p> tags we've inserted; block level elements are
           # siblings to <p> tags, not children.
           top = top.parent while top.name == "p"
 
           # Some tags we don't want to traverse into, like <pre> and <script>. Just copy them into the doc.
-          if STRAIGHT_COPY_TAGS.include? node.name
+          if STRAIGHT_COPY_TAGS_LOOKUP.has_key? node.name
             top.add_child node.clone
           else
             # If this is a block-level element, we'll create a new empty version of it, stick it into the doc,
@@ -85,7 +89,7 @@ module Wraptext
         # in a <p> tag, the existing tag is re-used for the first chunk.
         elsif node.text?
           node.content.split(MULTIPLE_NEWLINES_REGEX).each_with_index do |text, index|
-            if (index == 0 and top.name == "p") or NO_WRAP_TAG.include?(top.name)
+            if (index == 0 and top.name == "p") or NO_WRAP_TAG_LOOKUP.has_key?(top.name)
               top.add_child @root.create_text_node(text)
             elsif top.name == "p"
               p = @root.create_element "p", text
