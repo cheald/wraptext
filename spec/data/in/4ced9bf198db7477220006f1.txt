@@ -1,0 +1,22 @@
+<p><img src="http://ec.mashable.com/wp-content/uploads/2009/01/bizspark2.gif" alt="" align="left"><em>The <a href="http://mashable.com/tag/bizspark">Spark of Genius Series</a> highlights a unique feature of startups and is made possible by <a rel="nofollow" href="http://www.microsoftstartupzone.com/BizSpark/Pages/At_a_Glance.aspx?WT.mc_id=MSZ_Mashable_posts">Microsoft BizSpark</a>. If you would like to have your startup considered for inclusion, please see the details <a href="http://mashable.com/bizspark/">here</a>.</em></p>
+<p>
+<img src="http://mashable.com/wp-content/uploads/2010/11/networking.jpg" alt="" title="networking" width="225" height="225" class="alignright"><strong>Name:</strong> <a href="http://www.hashable.com/" target="_blank">Hashable</a></p>
+<p>
+<strong>Quick Pitch:</strong> Track and share all your social and professional interactions and discover who else is out there to connect with.</p>
+<p>
+<strong>Genius Idea:</strong> Networking is an important activity for most of us. In the age of social media, tools like <a href="http://mashable.com/category/twitter">Twitter</a> and <a href="http://mashable.com/tag/linkedin">LinkedIn</a> help us extend offline networking online, but private beta startup Hashable seeks to both simplify and better track our personal and professional interactions.</p>
+<p>Hashable helps you document real-world connections with friends and professional contacts by using hashtags to describe interactions. Hashable tracks actions, connections, salutations, props and any other type of hashtag you can dream up.</p>
+<p>With introductions, for instance, a Hashable user can introduce any two Twitter users or e-mail contacts using the "Make an #intro" feature. Hashable publicly (or privately) notifies both parties via Twitter or e-mail and follows up to verify a connection was made. </p>
+<p>The "Post a connection" feature lets you specify a hashtag and the e-mail addresses or Twitter names of the people you have connected with offline. With this feature, you can use the system to quickly document all types of exchanges with hashtags such as #justmet, #meeting, #breakfast, #lunch, #dinner, #drinks, #coffee, #golf, #tennis, #brunch and #thanks.</p>
+<p>Hashable supports Twitter and e-mail and will soon support iPhone-app connections. The service employs game mechanics to inspire user engagement, rewarding users with points in the form of "Hashcred" for making introductions and receiving connections; super users are highlighted on the "top connectors" leader boards.</p>
+<p>The ultimate aim is to create a new data set around person-to-person interactions. The premise is that people already share their breakfast meetings and coffee get-togethers on Twitter, so Hashable wants to capture that information and structure the data for individual user and global insight. It's the social graph concept that Facebook is working to build around friends, but with relationships and specific interactions in focus.</p>
+<p>The startup just closed a $4 million round of funding led by Union Square Ventures, giving the company a rumored $30 million valuation, according to <a href="http://mediamemo.allthingsd.com/20101122/meet-hashable-which-wants-to-make-money-by-introducing-you/" target="_blank"><em>All Things D</em></a>. That's not too shabby, considering the startup pivoted from a financial data site to focus on this idea not too long ago.</p>
+<p>Hashable is currently in private beta, but the first 1,000 <em>Mashable</em> readers to follow the <a href="http://twitter.com/hashable" target="_blank">Hashable Twitter account</a> will receive invites to the site.</p>
+<p>
+<em>Image courtesy of Flickr, <a href="http://www.flickr.com/photos/tedxsf/" target="_blank">Tedx SF</a></em></p>
+<hr>
+<p><strong>Series Supported by Microsoft BizSpark</strong>
+</p>
+<hr>
+<p>
+<em>The <a href="http://mashable.com/tag/bizspark">Spark of Genius Series</a> highlights a unique feature of startups and is made possible by <a rel="nofollow" href="http://www.microsoftstartupzone.com/BizSpark/Pages/At_a_Glance.aspx?WT.mc_id=MSZ_Mashable_posts">Microsoft BizSpark</a>, a startup program that gives you three-year access to the latest Microsoft development tools, as well as connecting you to a nationwide network of investors and incubators. There are no upfront costs, so if your business is privately owned, less than three years old, and generates less than U.S.$1 million in annual revenue, you can <a href="http://mashable.com/bizspark">sign up today</a>.</em></p>
