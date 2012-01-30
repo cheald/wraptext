@@ -113,4 +113,24 @@ EOF
       Wraptext::Parser.new(doc).to_html.should == expects.strip      
     end
   end
+ 
+  context "given Wordpress datasets" do
+    before :all do
+      @in = File.expand_path(File.join(__FILE__, "..", "..", "data", "in"))
+      @out = File.expand_path(File.join(__FILE__, "..", "..", "data", "out"))
+    end
+
+    def test_datafile(file)
+      data_in = File.read(file)
+      control = File.read(File.join(@out, File.basename(file)))
+      out = Wraptext::Parser.new(data_in).to_html
+      out.strip.gsub(/\s+/, " ").gsub(/>/, ">\n").should == control.strip.gsub(/\s+/, " ").gsub(/>/, ">\n")
+    end
+
+    Dir.glob( File.expand_path(File.join(__FILE__, "..", "..", "data", "in", "*")) ).each do |file|
+      it "should generate equivalent HTML for #{File.basename(file)}" do
+        test_datafile file
+      end
+    end
+  end
 end
