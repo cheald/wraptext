@@ -106,7 +106,8 @@ module Wraptext
           if top.name == "p"
             top.add_child node.clone
           else
-            p = @root.create_element "p", text
+            p = @root.create_element "p"
+            p.add_child node.clone
             top.add_child p
             top = p
           end
