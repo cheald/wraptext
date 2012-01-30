@@ -44,18 +44,14 @@ module Wraptext
     private
 
     def strip_empty_paragraphs! 
-      @root.xpath("//p").each do |node|
-        if node.text.strip == ''
-          empty = true
-          node.children.each do |child|
-            if child.name != "text"
-              empty = false
-              break 
-            end
-          end
-          node.remove if empty
+      @root.xpath("//p").each do |n|
+        if n.inner_html.strip == ''
+          n.remove
+        elsif n.content.strip == ''
+          n.parent.add_child n.children
+          n.remove
         end
-      end      
+      end
     end    
 
     # This traverses the entire document, and where it finds double newlines in text,
