@@ -120,11 +120,20 @@ EOF
       @out = File.expand_path(File.join(__FILE__, "..", "..", "data", "out"))
     end
 
+    def clean_data(data)
+      data.gsub(/[\r\n\s]+/, " ").
+      gsub(/>/, ">\n").
+      gsub(" />", ">").
+      split(/\n/).
+      map(&:strip).      
+      join("\n").strip
+    end 
+
     def test_datafile(file)
       data_in = File.read(file)
       control = File.read(File.join(@out, File.basename(file)))
       out = Wraptext::Parser.new(data_in).to_html
-      out.strip.gsub(/\s+/, " ").gsub(/>/, ">\n").should == control.strip.gsub(/\s+/, " ").gsub(/>/, ">\n")
+      clean_data(out).should == clean_data(control)
     end
 
     Dir.glob( File.expand_path(File.join(__FILE__, "..", "..", "data", "in", "*")) ).each do |file|
@@ -133,4 +142,22 @@ EOF
       end
     end
   end
+
+  context "Given a p with em inside it" do
+    doc = <<-EOF
+<p>
+  This is some <em>emphasized</em> text
+
+  And here is <i>another</i> line
+</p>
+EOF
+
+    expects = <<-EOF
+<p>
+  This is some <em>emphasized</em> text</p>
+<p>  And here is <i>another</i> line
+</p>
+EOF
+    Wraptext::Parser.new(doc).to_html.should == expects.strip      
+  end  
 end

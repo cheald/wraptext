@@ -6,13 +6,10 @@ module Wraptext
     figure figcaption details menu summary h1 h2 h3 h4 h5 h6 script"
     BLOCK_TAGS_LOOKUP = Hash[*BLOCK_TAGS.map {|e| [e, 1]}.flatten]
 
-    NO_WRAP_TAG = %w"table thead tfoot caption col colgroup tbody tr td th dl dd dt
-    ul ol li pre select option form map area math style input hr
-    fieldset legend section article aside hgroup header footer nav
-    figure figcaption details menu summary h1 h2 h3 h4 h5 h6 script"
-    NO_WRAP_TAG_LOOKUP = Hash[*NO_WRAP_TAG.map {|e| [e, 1]}.flatten]
+    NO_WRAP_IN = %w"h1 h2 h3 h4 h5 h6"
+    NO_WRAP_IN_LOOKUP = Hash[*NO_WRAP_IN.map {|e| [e, 1]}.flatten]
 
-    STRAIGHT_COPY_TAGS = %w"script pre textarea"
+    STRAIGHT_COPY_TAGS = %w"script pre textarea style"
     STRAIGHT_COPY_TAGS_LOOKUP = Hash[*STRAIGHT_COPY_TAGS.map {|e| [e, 1]}.flatten]
     MULTIPLE_NEWLINES_REGEX = /(\r\n|\n){2,}/
 
@@ -47,9 +44,9 @@ module Wraptext
       @root.xpath("//p").each do |n|
         if n.inner_html.strip == ''
           n.remove
-        elsif n.content.strip == ''
-          n.parent.add_child n.children
-          n.remove
+        #elsif n.content.strip == ''
+        #  n.parent.add_child n.children
+        #  n.remove
         end
       end
     end    
@@ -67,7 +64,7 @@ module Wraptext
           # If we hit a block-level tag, we need to unwind any <p> tags we've inserted; block level elements are
           # siblings to <p> tags, not children.
           top = top.parent while top.name == "p"
-
+          
           # Some tags we don't want to traverse into, like <pre> and <script>. Just copy them into the doc.
           if STRAIGHT_COPY_TAGS_LOOKUP.has_key? node.name
             top.add_child node.clone
@@ -76,7 +73,9 @@ module Wraptext
             # then recurse over the original node's children to populate it.
             copy = @root.create_element node.name, node.attributes
             top.add_child copy
+            @in_paragraph = true if node.name == "p"
             reparent_nodes copy, node
+            @in_paragraph = false if node.name == "p"
           end
 
         # If this is a text node, we need to make sure it gets wrapped in a P, unless it's in an element that
@@ -85,16 +84,28 @@ module Wraptext
         # in a <p> tag, the existing tag is re-used for the first chunk.
         elsif node.text?
           node.content.split(MULTIPLE_NEWLINES_REGEX).each_with_index do |text, index|
-            if (index == 0 and top.name == "p") or NO_WRAP_TAG_LOOKUP.has_key?(top.name)
+            if NO_WRAP_IN_LOOKUP.has_key?(top.name)
               top.add_child @root.create_text_node(text)
-            elsif top.name == "p"
-              p = @root.create_element "p", text
-              top.after p
-              top = p
+            elsif top.children.empty?
+              if top.name == "p"
+                top.add_child @root.create_text_node(text)
+              else
+                p = @root.create_element "p", text
+                top.add_child p
+                top = p
+              end
             else
-              p = @root.create_element "p", text
-              top.add_child p
-              top = p
+              if top.children.last.name == "text"
+                p = @root.create_element "p", text
+                top.after p
+                top = p
+              elsif BLOCK_TAGS_LOOKUP.has_key? top.children.last.name
+                p = @root.create_element "p", text
+                top.add_child p
+                top = p
+              else
+                top.add_child @root.create_text_node(text)
+              end
             end
           end
           
@@ -103,7 +114,7 @@ module Wraptext
         # This allows things like "<em>Foo</em> Bar Baz" to be wrapped in a single tag, as the <em> tag will be
         # wrapped in a <p> tag, then the text node will reuse the existing <p> tag when it is parsed.
         else
-          if top.name == "p"
+          if top.name == "p" or NO_WRAP_IN_LOOKUP.has_key?(top.name)
             top.add_child node.clone
           else
             p = @root.create_element "p"
