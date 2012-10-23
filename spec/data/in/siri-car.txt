@@ -1,0 +1,6 @@
+The other day I got a text on my iPhone while I was sitting in a meeting at work. Not an unusual occurrence for me, but the recipient was. It was from my car. Thanks, SmartStart.
+
+<strong>Subject</strong>: Alert for Andrea's Rav
+<strong>Message</strong>: Command received at vehicle. Speed: 0
+
+My car was telling me someone (my son) had started it using the Viper SmartStart Remote. I hit the <a href="http://mashable.com/follow/topics/gps/">GPS</a> button on the SmartStart app on my iPhone (also available for Android and Blackberry), and was able to tell he was driving from my house to where he works. Or in that general direction. If I wanted to, I could check back in a little while and see if he actually went there.

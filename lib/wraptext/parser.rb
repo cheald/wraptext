@@ -27,10 +27,11 @@ module Wraptext
       end
       @root = Nokogiri::HTML "<body></body>"
       reparent_nodes @root.xpath("/html/body").first, @doc.xpath("/html/body").first
+      replace_single_breaks
       strip_empty_paragraphs!
     end
 
-    def to_html      
+    def to_html
       @html ||= @root.xpath("/html/body").inner_html
     end
 
@@ -40,7 +41,31 @@ module Wraptext
 
     private
 
-    def strip_empty_paragraphs! 
+    def replace_single_breaks
+      nodes = @root.xpath("//p//text()")
+      nodes.each do |node|
+        frag = Nokogiri::HTML::DocumentFragment.parse node.content.gsub(/(\r\n|\n)/, "<br />")
+        node.swap frag
+      end
+
+      @root.xpath("//p").each do |node|
+        if child = node.children[0] and child.name == "br"
+          child.remove
+        end
+        if child = node.children[node.children.length - 1] and child.name == "br"
+          child.remove
+        end
+        # This is done after the BR removals intentionally.
+        if child = node.children[0] and child.text?
+          child.content = child.content.lstrip
+        end
+        #if child = node.children[node.children.length - 1] and child.text?
+        # child.content = child.content.rstrip
+        # end
+      end
+    end
+
+    def strip_empty_paragraphs!
       @root.xpath("//p").each do |n|
         if n.inner_html.strip == ''
           n.remove
@@ -49,7 +74,7 @@ module Wraptext
         #  n.remove
         end
       end
-    end    
+    end
 
     # This traverses the entire document, and where it finds double newlines in text,
     # it replaces them with <p> tags. This is a document-oriented approach to this
@@ -64,7 +89,7 @@ module Wraptext
           # If we hit a block-level tag, we need to unwind any <p> tags we've inserted; block level elements are
           # siblings to <p> tags, not children.
           top = top.parent while top.name == "p"
-          
+
           # Some tags we don't want to traverse into, like <pre> and <script>. Just copy them into the doc.
           if STRAIGHT_COPY_TAGS_LOOKUP.has_key? node.name
             top.add_child node.clone
@@ -108,7 +133,7 @@ module Wraptext
               end
             end
           end
-          
+
         # If this isn't a block or text node, we need to copy it into the new document. If it's a <p> node, then
         # we just copy it in directly. Else, wrap it in a <p> tag and copy it in.
         # This allows things like "<em>Foo</em> Bar Baz" to be wrapped in a single tag, as the <em> tag will be

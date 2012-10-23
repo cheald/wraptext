@@ -26,7 +26,7 @@ describe Wraptext::Parser do
 
     it "should return a Nokogiri::XML::Element from #to_doc" do
       @doc.to_doc.should be_a(Nokogiri::XML::Element)
-    end    
+    end
   end
 
   context "given a set of plain text" do
@@ -42,8 +42,7 @@ describe Wraptext::Parser do
     it "should convert plain text to p-wrapped text" do
       expects = <<-EOF
 <p>This is some text.</p>
-<p>      This is some more text.
-</p>
+<p>This is some more text.</p>
 EOF
       @doc.to_html.should == expects.strip
     end
@@ -57,18 +56,15 @@ This is some text
 This is some text after the block element
 EOF
       expects = <<-EOF
-<p>This is some text
-</p>
+<p>This is some text</p>
 <div><p>This is a block level element</p></div>
-<p>
-This is some text after the block element
-</p>
+<p>This is some text after the block element</p>
 EOF
       Wraptext::Parser.new(doc).to_html.should == expects.strip
     end
   end
 
-  
+
   context "given plain text with some p-peer tags" do
     it "should not inject p tags directly inside p-peer tags" do
       doc = <<-EOF
@@ -77,16 +73,13 @@ This is some text
 This is some text after the block element
 EOF
       expects = <<-EOF
-<p>This is some text
-</p>
+<p>This is some text</p>
 <h1>This is a p-peer element</h1>
-<p>
-This is some text after the block element
-</p>
+<p>This is some text after the block element</p>
 EOF
       Wraptext::Parser.new(doc).to_html.should == expects.strip
     end
-  end  
+  end
 
   context "given a <script> tag" do
     it "should not perform any transformation inside the tag" do
@@ -102,18 +95,17 @@ And another line
 EOF
       expects = <<-EOF
 <p>This is some precursor text</p>
-<p>And another line
-</p>
+<p>And another line</p>
 <script>
   var elem = 'this is some javascript';
 
   elem = elem.toUpperCase();
 </script>
 EOF
-      Wraptext::Parser.new(doc).to_html.should == expects.strip      
+      Wraptext::Parser.new(doc).to_html.should == expects.strip
     end
   end
- 
+
   context "given Wordpress datasets" do
     before :all do
       @in = File.expand_path(File.join(__FILE__, "..", "..", "data", "in"))
@@ -125,9 +117,9 @@ EOF
       gsub(/>/, ">\n").
       gsub(" />", ">").
       split(/\n/).
-      map(&:strip).      
+      map(&:strip).
       join("\n").strip
-    end 
+    end
 
     def test_datafile(file)
       data_in = File.read(file)
@@ -153,11 +145,9 @@ EOF
 EOF
 
     expects = <<-EOF
-<p>
-  This is some <em>emphasized</em> text</p>
-<p>  And here is <i>another</i> line
-</p>
+<p>This is some <em>emphasized</em> text</p>
+<p>And here is <i>another</i> line</p>
 EOF
-    Wraptext::Parser.new(doc).to_html.should == expects.strip      
-  end  
+    Wraptext::Parser.new(doc).to_html.should == expects.strip
+  end
 end
