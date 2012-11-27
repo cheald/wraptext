@@ -44,8 +44,10 @@ module Wraptext
     def replace_single_breaks
       nodes = @root.xpath("//p//text()")
       nodes.each do |node|
-        frag = Nokogiri::HTML::DocumentFragment.parse node.content.gsub(/(\r\n|\n)/, "<br />")
-        node.swap frag
+        if node.content.match(/[\r\n]/)
+          frag = Nokogiri::HTML::DocumentFragment.parse node.content.gsub(/(\r\n|\n)/, "<br />")
+          node.swap frag
+        end
       end
 
       @root.xpath("//p").each do |node|
@@ -82,6 +84,7 @@ module Wraptext
     # simple_format is not appropriate here, as it does not consider block-level
     # html element context when performing substitutions.
     def reparent_nodes(top, parent)
+      return if parent.nil?
       for i in (0..parent.children.length - 1) do
         node = parent.children[i]
         # Block-level tags like <div> and <blockquote> should be traversed into.

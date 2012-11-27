@@ -148,6 +148,21 @@ EOF
 <p>This is some <em>emphasized</em> text</p>
 <p>And here is <i>another</i> line</p>
 EOF
-    Wraptext::Parser.new(doc).to_html.should == expects.strip
+    specify { Wraptext::Parser.new(doc).to_html.should == expects.strip }
+  end
+
+  context "when passed an empty document" do
+    specify { expect { Wraptext::Parser.new("") }.to_not raise_error }
+  end
+
+  context "Given an article with two concurrent non-block tags" do
+    let(:article) {<<-EOF
+      A "Get the Facts" button sends you to a <em>Washington Post</em> <a href="http://www.washingtonpost.com/wp-srv/special/politics/campaign-finance/" target="_blank">article</a> about campaign finance.
+    EOF
+    }
+
+    it "should preserve spacing between non-block tags" do
+      Wraptext::Parser.new(article).to_html.should match("</em> <a")
+    end
   end
 end
