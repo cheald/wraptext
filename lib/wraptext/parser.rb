@@ -21,7 +21,9 @@ module Wraptext
       @doc = if text_or_nokogiri_doc.is_a? Nokogiri::XML::Document
         text_or_nokogiri_doc
       elsif text_or_nokogiri_doc.is_a? String
-        Nokogiri::HTML text_or_nokogiri_doc
+        # We add the empty paragraph tag, as Nokogiri assumes that leading script
+        # tags belong in the document head otherwise.
+        Nokogiri::HTML "<p></p>" + text_or_nokogiri_doc
       else
         raise "#initialize requires a string or Nokogiri document"
       end

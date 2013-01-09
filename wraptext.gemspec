@@ -2,16 +2,19 @@
 Gem::Specification.new do |gem|
   gem.authors       = ["Chris Heald"]
   gem.email         = ["cheald@gmail.com"]
-  gem.description   = %q{Wraps bare text nodes from an HTML document in <p> tags and splits text nodes on double newlines. Conveniently serves to format Wordpress post content properly as a side effect.}
+  gem.description   = %q{
+    Performs Wordpress-style conversion of single and double newlines to <p> and <br /> tags. Produces well-formed HTML and intelligently ignores unbreakable
+    sections like <script> and <pre> tags. Conveniently turns Wordpress post content into valid HTML.
+  }
   gem.summary       = %q{Wraps bare text nodes from an HTML document in <p> tags and splits text nodes on double newlines.}
-  gem.homepage      = ""
+  gem.homepage      = "http://github.com/cheald/wraptext"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "wraptext"
   gem.require_paths = ["lib"]
-  gem.version       = "0.1.4"
+  gem.version       = "0.1.5"
 
   gem.add_dependency('nokogiri')
 end

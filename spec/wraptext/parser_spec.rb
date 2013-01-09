@@ -165,4 +165,20 @@ EOF
       Wraptext::Parser.new(article).to_html.should match("</em> <a")
     end
   end
+
+  it "should not strip leading script tags" do
+    doc = <<-EOF
+<script type='text/javascript' src='http://WTXF.images.worldnow.com/interface/js/WNVideo.js?rnd=543235;hostDomain=www.myfoxphilly.com;playerWidth=645;playerHeight=362;isShowIcon=true;clipId=8157027;flvUri=;partnerclipid=;adTag=Morning%2520Show;advertisingZone=;enableAds=true;landingPage=;islandingPageoverride=false;playerType=STANDARD_EMBEDDEDscript;controlsType=overlay'></script><a href="http://www.myfoxphilly.com" title="Philadelphia News, Weather and Sports from WTXF FOX 29">Philadelphia News, Weather and Sports from WTXF FOX 29</a>
+
+Viewers of <em>Good Day Philadelphia</em> got a surprise Wednesday morning when Mark Wahlberg stopped by to do the weather and traffic.
+
+Wahlberg, who is promoting his upcoming movie <em>Broken City</em>, delivered the impromptu report on Fox affiliate WTXF. Looking ahead to the seven-day forecast, Wahlberg, joined by <em>Broken City</em> Director Allen Hughes, pronounced Wednesday's 54 degrees "perfect golf weather." Wahlberg then slipped into a Philly accent for the traffic report: "Look at this congestion here. We're expecting 40- to 45-minute delays if you're coming east bound on the 676 here. You're going to have some serious problems. Why don't you stop and get yourself a hoagie?"
+
+Wahlberg goofs amiably but he's a long way from topping Sacha Baron Cohen's local news cameo in <em>Borat</em> below.
+
+
+<iframe width="640" height="360" src="http://www.youtube.com/embed/KlXd9cooOhE" frameborder="0" allowfullscreen></iframe>
+EOF
+    Wraptext::Parser.new(doc).to_html.should match("<script")
+  end
 end
