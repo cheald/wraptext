@@ -27,63 +27,108 @@ describe Wraptext::Parser do
     it "should return a Nokogiri::XML::Element from #to_doc" do
       @doc.to_doc.should be_a(Nokogiri::XML::Element)
     end
+
+    it 'should return a string from #to_text' do
+      @doc.to_text.should be_a(String)
+    end
   end
 
   context "given a set of plain text" do
-    before :each do
-      doc = <<-EOF
+    let(:text) {<<-EOF
       This is some text.
 
       This is some more text.
       EOF
-      @doc = Wraptext::Parser.new(doc)
-    end
+    }
 
-    it "should convert plain text to p-wrapped text" do
-      expects = <<-EOF
+    let(:doc) { Wraptext::Parser.new(text) }
+
+    describe '#to_html' do
+      it "should convert plain text to p-wrapped text" do
+        expects = <<-EOF
 <p>This is some text.</p>
 <p>This is some more text.</p>
 EOF
-      @doc.to_html.should == expects.strip
+        doc.to_html.should == expects.strip
+      end
+    end
+
+    describe '#to-text'  do
+      it 'should do nothing to p-wrapped text' do
+        doc.to_text.should == text.strip
+      end
     end
   end
 
   context "given plain text with a block element in the middle" do
-    it "should respect block-level elements" do
-      doc = <<-EOF
+    let(:text) {<<-EOF
 This is some text
 <div>This is a block level element</div>
 This is some text after the block element
 EOF
-      expects = <<-EOF
+    }
+
+    let(:doc) { Wraptext::Parser.new(text) }
+
+    describe '#to_html' do
+      it "should respect block-level elements" do
+        expects = <<-EOF
 <p>This is some text</p>
 <div><p>This is a block level element</p></div>
 <p>This is some text after the block element</p>
 EOF
-      Wraptext::Parser.new(doc).to_html.should == expects.strip
+        doc.to_html.should == expects.strip
+      end
+    end
+
+    describe '#to_text'  do
+      it 'should seperate block-level elements with newlines' do
+        expects = <<-EOF
+This is some text
+This is a block level element
+This is some text after the block element
+EOF
+        doc.to_text.should == expects.strip
+      end
     end
   end
 
 
   context "given plain text with some p-peer tags" do
-    it "should not inject p tags directly inside p-peer tags" do
-      doc = <<-EOF
+    let(:text) {<<-EOF
 This is some text
 <h1>This is a p-peer element</h1>
 This is some text after the block element
 EOF
-      expects = <<-EOF
+    }
+
+    let(:doc) { Wraptext::Parser.new(text) }
+
+    describe '#to_html' do
+      it "should not inject p tags directly inside p-peer tags" do
+        expects = <<-EOF
 <p>This is some text</p>
 <h1>This is a p-peer element</h1>
 <p>This is some text after the block element</p>
 EOF
-      Wraptext::Parser.new(doc).to_html.should == expects.strip
+        doc.to_html.should == expects.strip
+      end
+    end
+
+    describe '#to_text' do
+      it 'should seperate block-level elements with newlines' do
+        expects = <<-EOF
+This is some text
+This is a p-peer element
+This is some text after the block element
+EOF
+        doc.to_text.should == expects.strip
+      end
     end
   end
 
   context "given a <script> tag" do
-    it "should not perform any transformation inside the tag" do
-      doc = <<-EOF
+    let(:text) {<<-EOF
 This is some precursor text
 
 And another line
@@ -93,7 +138,13 @@ And another line
   elem = elem.toUpperCase();
 </script>
 EOF
-      expects = <<-EOF
+    }
+
+    let(:doc) { Wraptext::Parser.new(text) }
+
+    describe '#to_html' do
+      it "should not perform any transformation inside the tag" do
+        expects = <<-EOF
 <p>This is some precursor text</p>
 <p>And another line</p>
 <script>
@@ -102,10 +153,12 @@ EOF
   elem = elem.toUpperCase();
 </script>
 EOF
-      Wraptext::Parser.new(doc).to_html.should == expects.strip
+        doc.to_html.should == expects.strip
+      end
     end
   end
 
+  # todo
   context "given Wordpress datasets" do
     before :all do
       @in = File.expand_path(File.join(__FILE__, "..", "..", "data", "in"))
@@ -135,39 +188,69 @@ EOF
     end
   end
 
-  context "Given a p with em inside it" do
-    doc = <<-EOF
+  context "given a p with em inside it" do
+    let(:text) {<<-EOF
 <p>
   This is some <em>emphasized</em> text
 
   And here is <i>another</i> line
 </p>
 EOF
+    }
 
-    expects = <<-EOF
+    let(:doc) { Wraptext::Parser.new(text) }
+
+    describe '#to_html' do
+      it 'preserves non block-level tags' do
+        expects = <<-EOF
 <p>This is some <em>emphasized</em> text</p>
 <p>And here is <i>another</i> line</p>
 EOF
-    specify { Wraptext::Parser.new(doc).to_html.should == expects.strip }
+        doc.to_html.should == expects.strip
+      end
+    end
+
+    describe '#to_text' do
+      it 'removes block-level and non block-level tags' do
+        expects = <<-EOF
+  This is some emphasized text
+
+  And here is another line
+EOF
+        doc.to_text.should == expects.strip
+      end
+    end
   end
 
-  context "when passed an empty document" do
-    specify { expect { Wraptext::Parser.new("") }.to_not raise_error }
+  context "given an empty document" do
+    it 'should not raise an error' do
+      expect { Wraptext::Parser.new("") }.to_not raise_error
+    end
   end
 
-  context "Given an article with two concurrent non-block tags" do
-    let(:article) {<<-EOF
+  context "given an article with two concurrent non-block tags" do
+    let(:text) {<<-EOF
       A "Get the Facts" button sends you to a <em>Washington Post</em> <a href="http://www.washingtonpost.com/wp-srv/special/politics/campaign-finance/" target="_blank">article</a> about campaign finance.
     EOF
     }
 
-    it "should preserve spacing between non-block tags" do
-      Wraptext::Parser.new(article).to_html.should match("</em> <a")
+    let(:doc) { Wraptext::Parser.new(text) }
+
+    describe '#to_html' do
+      it "should preserve spacing between non-block tags" do
+        doc.to_html.should match("</em> <a")
+      end
+    end
+
+    describe '#to_text' do
+      it "should preserve spacing between non-block tags" do
+        doc.to_text.should match("Post article")
+      end
     end
   end
 
-  it "should not strip leading script tags" do
-    doc = <<-EOF
+  context "given an article with leading script tags" do
+    let(:text) {<<-EOF
 <script type='text/javascript' src='http://WTXF.images.worldnow.com/interface/js/WNVideo.js?rnd=543235;hostDomain=www.myfoxphilly.com;playerWidth=645;playerHeight=362;isShowIcon=true;clipId=8157027;flvUri=;partnerclipid=;adTag=Morning%2520Show;advertisingZone=;enableAds=true;landingPage=;islandingPageoverride=false;playerType=STANDARD_EMBEDDEDscript;controlsType=overlay'></script><a href="http://www.myfoxphilly.com" title="Philadelphia News, Weather and Sports from WTXF FOX 29">Philadelphia News, Weather and Sports from WTXF FOX 29</a>
 
 Viewers of <em>Good Day Philadelphia</em> got a surprise Wednesday morning when Mark Wahlberg stopped by to do the weather and traffic.
@@ -179,6 +262,20 @@ Wahlberg goofs amiably but he's a long way from topping Sacha Baron Cohen's loca
 
 <iframe width="640" height="360" src="http://www.youtube.com/embed/KlXd9cooOhE" frameborder="0" allowfullscreen></iframe>
 EOF
-    Wraptext::Parser.new(doc).to_html.should match("<script")
+    }
+
+    let(:doc) { Wraptext::Parser.new(text) }
+
+    describe '#to_html' do
+      it 'should not strip leading script tags' do
+        doc.to_html.should match("<script")
+      end
+    end
+
+    describe '#to_text' do
+      it 'should strip leading script tags' do
+        doc.to_text.should_not match("<script")
+      end
+    end
   end
 end
