@@ -41,6 +41,10 @@ module Wraptext
       @doc_out ||= @root.xpath("/html/body").first
     end
 
+    def to_text
+      @doc_out ||= @doc.xpath("/html/body").text.strip
+    end
+
     private
 
     def replace_single_breaks
