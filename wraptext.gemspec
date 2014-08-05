@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = "0.1.7"
   gem.signing_key = '/home/chris/.gemcert/gem-private_key.pem'
-  gem.cert_chain  = ['/home/chris/.gemcert/gem-public_cert.pem']
+  gem.cert_chain  = ['/home/chris/.gemcert/2014/gem-public_cert.pem']
 
   gem.add_dependency('nokogiri')
 end
